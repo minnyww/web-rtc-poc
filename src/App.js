@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import './App.css';
+import P2Pjs from './ExampleP2Pjs/P2Pjs';
 
 function App() {
   const localVideoRef = useRef()
@@ -79,6 +80,7 @@ function App() {
   return (
     <div>
       <h2>Web RTC</h2>
+      <P2Pjs />
       <video ref={localVideoRef} autoPlay></video>
       <video ref={remoteVideoRef} autoPlay></video>
       <button onClick={() => createOffer()}>create offer</button>
