@@ -15,6 +15,19 @@ function P2Pjs() {
             setPeerId(id)
         });
 
+        peer.on('connection', function (con) {
+            con.on('data', function (data) {
+                console.log('Incoming data', data);
+            });
+        });
+
+        // peer.on('data', (data) => {
+        //     const message = data.toString('utf-8')
+        //     console.log('message : ', message)
+        //     // update('> ' + message)
+        //     // console.log('peer received', message)
+        // })
+
         peer.on('call', (call) => {
             var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
@@ -32,7 +45,7 @@ function P2Pjs() {
         peerRef.current = peer;
     }, [])
 
-    const call = (remotePeerId) => {
+    const callPeer = (remotePeerId) => {
         var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
         getUserMedia({ video: true, audio: true }, (mediaStream) => {
@@ -53,13 +66,25 @@ function P2Pjs() {
         <div className="App">
             <h1>Current user id is {peerId}</h1>
             <input type="text" value={remotePeerIdValue} onChange={e => setRemotePeerIdValue(e.target.value)} />
-            <button onClick={() => call(remotePeerIdValue)}>Call</button>
+            <button onClick={() => callPeer(remotePeerIdValue)}>Call</button>
             <div>
                 <video ref={currentUserVideoRef} />
             </div>
             <div>
                 <video ref={remoteVideoRef} />
             </div>
+            <button onClick={() => {
+                const conn = peerRef.current.connect(remotePeerIdValue);
+                conn.on("open", () => {
+                    let data = {
+                        message: "Test",
+                        sender: peerId,
+                        type: "message",
+                    };
+
+                    conn.send(data);
+                });
+            }}>send message</button>
         </div>
     );
 }
